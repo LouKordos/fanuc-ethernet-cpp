@@ -36,7 +36,7 @@ target_link_libraries(fanuc_ethernet INTERFACE TracyClient)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT result)
 if(result)
-  set_target_properties(ati-netft PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_target_properties(fanuc_ethernet PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 add_subdirectory(tests)
