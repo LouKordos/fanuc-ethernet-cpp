@@ -1,0 +1,36 @@
+{
+	"name": "FANUC Ethernet Dev Container",
+	"build": {
+    	"dockerfile": "../Dockerfile",
+    	"context": "..",
+        "options": ["--network=host", "--progress=plain"]
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"ms-vscode.cpptools-extension-pack"
+			],
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash"
+			}
+		}
+	},
+	"runArgs": [
+    	"--cap-add=SYS_PTRACE",
+        "--cap-add=CAP_SYS_ADMIN",
+        "--name=ati-netft-cpp",
+    	"--security-opt", "seccomp=unconfined",
+        "--network=host",
+        "--privileged",
+        "--pid=host"
+	],
+    "workspaceFolder": "/app",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/app/,type=bind,consistency=cached",
+    "postCreateCommand": "cmake -DCMAKE_BUILD_TYPE=Release -S /app/src -B /app/src/build && cmake --build /app/src/build",
+    "remoteUser": "root",
+    "mounts": [
+        "type=bind,source=/sys/kernel/debug,target=/sys/kernel/debug,readonly"
+    ]
+}

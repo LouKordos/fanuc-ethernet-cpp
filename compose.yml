@@ -1,0 +1,7 @@
+services:
+    fanuc-ethernet-cpp:
+        build: .
+        image: fanuc-ethernet-cpp:latest
+        environment:
+            - TERM=xterm-256color
+        network_mode: "host"
