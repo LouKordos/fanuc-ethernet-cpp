@@ -28,4 +28,4 @@ RUN cmake --build ./build -j $(nproc) -v
 WORKDIR /app
 
 # Using CMD instead of ENTRYPOINT here so that docker-compose.yml for vs code can override it.
-CMD build-and-run.sh
+CMD sleep infinity
