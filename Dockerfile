@@ -6,12 +6,17 @@ RUN apt-get update -y && \
 
 WORKDIR /app/src
 
-COPY ./src /app/src
+COPY ./ /app/
+# For "dubious ownership" error inside dev container
+RUN git config --global --add safe.directory /workspaces/${localWorkspaceFolderBasename}
 
 ENV CC=gcc-14
 ENV CXX=g++-14
+ENV DOCKER_FLAG_FOR_RUN_SCRIPT=1
 
-RUN cmake -DCMAKE_BUILD_TYPE=Release -S . -B build && \
-	cmake --build build -j $(nproc) -v
+RUN cmake -DCMAKE_BUILD_TYPE=Release -S . -B ./build
+RUN cmake --build ./build -j $(nproc) -v
 
-ENTRYPOINT ["build/tests/move_test"]
+WORKDIR /app
+
+ENTRYPOINT ["/app/build-and-run.sh"]
