@@ -4,11 +4,19 @@ RUN apt-get update -y && \
 	apt-get install -y g++-14 gcc-14 cmake build-essential gdb git vim libtbb-dev && \
 	rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/src
+# For color test on shell startup
+RUN echo 'function color_test() {' >> ~/.bashrc && \
+    echo '    for i in {0..255} ; do' >> ~/.bashrc && \
+    echo '        printf "\\x1b[48;5;%sm%3d\\e[0m " "$i" "$i"' >> ~/.bashrc && \
+    echo '        if (( i == 15 )) || (( i > 15 )) && (( (i-15) % 6 == 0 )); then' >> ~/.bashrc && \
+    echo '            printf "\\n";' >> ~/.bashrc && \
+    echo '        fi' >> ~/.bashrc && \
+    echo '    done' >> ~/.bashrc && \
+    echo '}' >> ~/.bashrc && \
+    echo 'color_test' >> ~/.bashrc
 
+WORKDIR /app/src
 COPY ./ /app/
-# For "dubious ownership" error inside dev container
-RUN git config --global --add safe.directory /workspaces/${localWorkspaceFolderBasename}
 
 ENV CC=gcc-14
 ENV CXX=g++-14
