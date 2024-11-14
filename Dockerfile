@@ -19,4 +19,5 @@ RUN cmake --build ./build -j $(nproc) -v
 
 WORKDIR /app
 
-ENTRYPOINT ["/app/build-and-run.sh"]
+# Using CMD instead of ENTRYPOINT here so that docker-compose.yml for vs code can override it.
+CMD build-and-run.sh
