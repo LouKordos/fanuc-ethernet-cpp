@@ -9,7 +9,11 @@
 		"../compose.yml",
 		"docker-compose.yml"
 	],
-
+    "extensions": [
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools-extension-pack"
+    ],
 	// The 'service' property is the name of the service for the container that VS Code should
 	// use. Update this value and .devcontainer/docker-compose.yml to the real service name.
 	"service": "fanuc-ethernet-cpp",
