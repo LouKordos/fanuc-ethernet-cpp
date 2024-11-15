@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
 RUN apt-get update -y && \
-	apt-get install -y g++-14 gcc-14 cmake build-essential gdb git vim libtbb-dev && \
+	apt-get install -y g++-14 gcc-14 cmake build-essential gdb git curl vim libtbb-dev && \
 	rm -rf /var/lib/apt/lists/*
 
 # For color test on shell startup
