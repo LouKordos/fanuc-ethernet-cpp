@@ -109,6 +109,7 @@ namespace fanuc_ethernet {
             }
 
             std::expected<float, std::string> parse_float_from_buffer(const std::vector<uint8_t> &buf, int offset) {
+                ZoneScoped;
                 if(buf.size() < offset + sizeof(float)) {
                     return std::unexpected{"Buffer too small to parse float"};
                 }
