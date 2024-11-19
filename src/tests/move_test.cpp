@@ -30,9 +30,11 @@ int main() {
         return 1;
     }
 
-    std::expected<fanuc_ethernet::robot_pose, std::string> result = robot.read_current_position();
-    if(result.has_value()) {
-        fanuc_ethernet::robot_pose pose = result.value();
-        std::println("Robot current position read suceeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll);
+    for(int i = 0; i < 1000; i++) {
+        std::expected<fanuc_ethernet::robot_pose, std::string> result = robot.read_current_position();
+        if(result.has_value()) {
+            fanuc_ethernet::robot_pose pose = result.value();
+            std::println("Robot current position read suceeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll);
+        }
     }
 }
