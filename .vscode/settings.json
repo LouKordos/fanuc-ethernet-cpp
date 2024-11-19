@@ -1,3 +1,9 @@
 {
-    "cmake.sourceDirectory": "/app/src"
+    "cmake.sourceDirectory": "/app/src",
+    "files.associations": {
+        "ostream": "cpp",
+        "expected": "cpp",
+        "optional": "cpp",
+        "variant": "cpp"
+    }
 }
