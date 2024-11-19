@@ -61,6 +61,10 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "text_encoding": "cpp"
+        "text_encoding": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "shared_mutex": "cpp",
+        "print": "cpp"
     }
 }
