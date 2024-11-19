@@ -20,5 +20,5 @@ int main() {
             return 1;
         }
     }
-    return 0;
+    return !robot.write_R_register(1, 69);
 }
