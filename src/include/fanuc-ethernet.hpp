@@ -39,6 +39,9 @@ namespace fanuc_ethernet {
 
             bool write_R_register(uint register_index, int32_t value) {
                 ZoneScoped;
+                if(!connected) {
+                    return false;
+                }
                 try {
                     const CipUsint service_id = 0x10;
                     const EPath epath(0x6B, 0x1, register_index);
@@ -62,6 +65,9 @@ namespace fanuc_ethernet {
 
             std::expected<int, std::string> read_R_register(uint register_index) {
                 ZoneScoped;
+                if(!connected) {
+                    return std::unexpected{"Not connected yet."};
+                }
                 try {
                     const CipUsint service_id = 0xe;
                     const EPath epath(0x6B, 0x1, register_index);
