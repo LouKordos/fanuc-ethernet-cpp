@@ -40,9 +40,10 @@ namespace fanuc_ethernet {
             std::string ip;
             std::shared_ptr<MessageRouter> message_router;
             std::shared_ptr<SessionInfo> session_info;
+            uint timeout_milliseconds;
             bool connected {false};
         public:
-            FANUCRobot(const std::string &ip) : ip(ip) {
+            FANUCRobot(const std::string &ip, uint timeout_milliseconds = 30) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
                 
             }
 
@@ -50,7 +51,7 @@ namespace fanuc_ethernet {
                 ZoneScoped;
                 try {
                     // Open EIP session with the adapter, 0xAF12 is default CIP/EIP port
-                    session_info = std::make_shared<SessionInfo>(ip, 0xAF12);
+                    session_info = std::make_shared<SessionInfo>(ip, 0xAF12, std::chrono::milliseconds(timeout_milliseconds));
                     message_router = std::make_shared<MessageRouter>();
                     connected = true;
                     return {};
