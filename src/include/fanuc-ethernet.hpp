@@ -16,8 +16,8 @@ using namespace eipScanner::utils;
 
 namespace fanuc_ethernet {
     struct robot_pose {
-        int utool;
-        int uframe;
+        short utool;
+        short uframe;
         float x;
         float y;
         float z;
