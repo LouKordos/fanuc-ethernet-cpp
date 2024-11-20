@@ -7,6 +7,8 @@
 #include <iostream>
 #include <expected>
 #include <string>
+#include <unistd.h>
+
 #include <tracy/Tracy.hpp>
 
 using eipScanner::SessionInfo;
@@ -299,8 +301,10 @@ namespace fanuc_ethernet {
                     const EPath epath(0x7B, 0x01, register_index);
                     Buffer data;
                     // Apparently UFRAME and UTOOL have to always be 0.
-                    data << desired_pose.utool << desired_pose.uframe << desired_pose.x << desired_pose.y << desired_pose.z << desired_pose.yaw << desired_pose.pitch << desired_pose.roll
+                    data << (short)0 << (short)0 << desired_pose.x << desired_pose.y << desired_pose.z << desired_pose.yaw << desired_pose.pitch << desired_pose.roll
                         << desired_pose.turn1 << desired_pose.turn2 << desired_pose.turn3 << desired_pose.bitflip << desired_pose.E0 << desired_pose.E1 << desired_pose.E2;
+
+                    // std::cout << data.data().size()<<std::endl;
 
                     auto response = message_router->sendRequest(session_info, service_id, epath, data.data());
 
