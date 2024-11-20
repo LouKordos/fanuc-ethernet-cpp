@@ -14,8 +14,6 @@ using eipScanner::MessageRouter;
 using namespace eipScanner::cip;
 using namespace eipScanner::utils;
 
-// TODO: Include Tracy and measure send and connect times in detail, add message text to profiler metadata
-
 namespace fanuc_ethernet {
     struct robot_pose {
         int utool;
