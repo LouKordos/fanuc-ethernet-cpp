@@ -33,6 +33,7 @@ namespace fanuc_ethernet {
         float E2;
     };
 
+    // THIS LIRBARY IS NOT THREADSAFE AND DOES NOT PROVIDE ANY GUARANTEES WHEN ACCESSED BY MULTIPLE THREADS
     class FANUCRobot {
         private:
             std::string ip;
