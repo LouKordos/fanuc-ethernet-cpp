@@ -201,6 +201,29 @@ namespace fanuc_ethernet {
                 }
             }
 
+            std::expected<robot_pose, std::string> read_PR_register(const uint register_index) {
+                ZoneScoped;
+                if(!connected) {
+                    return std::unexpected{"Not connected yet."};
+                }
+                try {
+                    const CipUsint service_id = ServiceCodes::GET_ATTRIBUTE_SINGLE;
+                    const EPath epath(0x7B, 0x01, register_index);
+
+                    auto response = message_router->sendRequest(session_info, service_id, epath);
+
+                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
+                        Buffer buffer(response.getData());
+                        return parse_pose_buffer(buffer.data());
+                    }
+                    else {
+                        return std::unexpected{"Error: " + std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                    }
+                } catch (std::exception &e) {
+                    return std::unexpected{"Exception:" + std::string{e.what()}};
+                }
+            }
+
             // TODO: enable_robot, disable_robot, is_enabled, is_moving?, write_position_register(register_index), set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
             // set_velocity_limit, move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };

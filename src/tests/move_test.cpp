@@ -35,7 +35,16 @@ int main() {
         std::expected<fanuc_ethernet::robot_pose, std::string> result = robot.read_current_position();
         if(result.has_value()) {
             fanuc_ethernet::robot_pose pose = result.value();
-            std::println("Robot current position read suceeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll);
+            std::println("Robot current position read succeeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll);
+        }
+    }
+
+    for(int i = 0; i < 1000; i++) {
+        const uint reg_num = 4;
+        std::expected <fanuc_ethernet::robot_pose, std::string> result = robot.read_PR_register(reg_num);
+        if(result.has_value()) {
+            fanuc_ethernet::robot_pose pose = result.value();
+            std::println("Robot PR[{8}] read succeeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll, reg_num);
         }
     }
 }
