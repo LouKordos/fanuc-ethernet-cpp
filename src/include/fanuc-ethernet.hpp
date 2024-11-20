@@ -44,7 +44,7 @@ namespace fanuc_ethernet {
             bool fine_high_speed_skip_enabled {false};
             const uint ENABLE_REGISTER = 1; // Enable Register, 1 means robot moves, 0 means robot does not move, and interrupts using high speed skip
             const uint HIGH_SPEED_SKIP_FLAG_REGISTER = 21; // Switch case register to determine mode, 0 is FINE + High speed Skip, 1 is CNT100 + "normal skip"
-            const uint SPEED_LIMIT_REGISTER = 5; // Speed register, used in move commands to control the speed
+            const uint VELOCITY_LIMIT_REGISTER = 5; // Velocity register, used in move commands to control the velocity
             const uint POSE_SETPOINT_POSITION_REGISTER = 1; // Position setpoint used by TP program
             const uint SKIP_POSE_POSITION_REGISTER = 4; // Set by high speed skip to position when it skips
         public:
@@ -335,8 +335,43 @@ namespace fanuc_ethernet {
                 else return std::unexpected {res.error()};
             }
 
-            // TODO: set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
-            // set_velocity_limit, move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
+            // Sets movement mode to FINE and enables high speed skip. This should be used for final adjustments as it's limited to 100mm/s.
+            // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
+            // However, the TP program needs to be adjusted accordingly in that case, of course.
+            std::expected<void, std::string> set_mode_fine_high_speed_skip() {
+                auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 0);
+                if(res.has_value()) {
+                    fine_high_speed_skip_enabled = true;
+                    return {};
+                }
+                else {
+                    return res;
+                }
+            }
+
+            // Sets movement mode to CNT and switches to "normal speed" skip.
+            // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
+            // However, the TP program needs to be adjusted accordingly in that case, of course.
+            std::expected<void, std::string> set_mode_cnt_normal_skip() {
+                auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 1);
+                if(res.has_value()) {
+                    fine_high_speed_skip_enabled = false;
+                    return {};
+                }
+                else {
+                    return res;
+                }
+            }
+
+            bool is_fine_high_speed_skip_enabled() {
+                return fine_high_speed_skip_enabled;
+            }
+
+            std::expected<void, std::string> set_velocity_limit(const uint vel_limit) {
+                return write_R_register(VELOCITY_LIMIT_REGISTER, vel_limit);
+            }
+
+            // TODO: move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };
 }
 

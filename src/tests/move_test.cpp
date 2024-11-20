@@ -78,4 +78,71 @@ int main() {
             return 1;
         }
     }
+
+    for(int i = 0; i < 100; i++) {
+        auto res = robot.enable_robot();
+        if(res.has_value()) {
+            std::println("Enable robot succeeded.");
+        }
+        else {
+            std::println("Enable robot failed, exiting: {0}", res.error());
+            return 1;
+        }
+    }
+
+    for(int i = 0; i < 100; i++) {
+        auto res = robot.disable_robot();
+        if(res.has_value()) {
+            std::println("Disable robot succeeded.");
+        }
+        else {
+            std::println("Disable robot failed, exiting: {0}", res.error());
+            return 1;
+        }
+    }
+
+    for(int i = 0; i < 100; i++) {
+        auto res = robot.is_enabled();
+        if(res.has_value()) {
+            std::println("is_enabled check succeeded, result: {0}", res.value());
+        }
+        else {
+            std::println("is_enabled check failed, exiting: {0}", res.error());
+            return 1;
+        }
+    }
+
+    for(int i = 0; i < 100; i++) {
+        auto res = robot.set_mode_cnt_normal_skip();
+        if(res.has_value()) {
+            std::println("is_enabled check succeeded.");
+        }
+        else {
+            std::println("is_enabled check failed, exiting: {0}", res.error());
+            return 1;
+        }
+    }
+
+    for(int i = 0; i < 100; i++) {
+        auto res = robot.set_mode_fine_high_speed_skip();
+        if(res.has_value()) {
+            std::println("is_enabled check succeeded. is_fine_high_speed_skip_enabled: {0}", robot.is_fine_high_speed_skip_enabled());
+        }
+        else {
+            std::println("is_enabled check failed, exiting: {0}", res.error());
+            return 1;
+        }
+    }
+    
+    for(int i = 0; i < 100; i++) {
+        const uint vel_limit = 420; // mm/s
+        auto res = robot.set_velocity_limit(vel_limit);
+        if(res.has_value()) {
+            std::println("Setting vel_limit={0} succeeded, check on FANUC robot.", vel_limit);
+        }
+        else {
+            std::println("Setting vel_limit={0} failed, exiting:", vel_limit, res.error());
+            return 1;
+        }
+    }
 }
