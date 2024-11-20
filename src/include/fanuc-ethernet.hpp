@@ -123,6 +123,17 @@ namespace fanuc_ethernet {
                 // return *reinterpret_cast<const float*>(&buf[offset]);
             }
 
+            std::expected<uint8_t, std::string> parse_byte_from_buffer(const std::vector<uint8_t> &buf, const int offset) {
+                ZoneScoped;
+                if(buf.size() < offset + sizeof(uint8_t)) {
+                    return std::unexpected{"Buffer too small to parse byte"};
+                }
+
+                uint8_t temp;
+                std::memcpy(&temp, &buf[offset], sizeof(temp));
+                return temp;
+            }
+
             std::expected<robot_pose, std::string> parse_pose_buffer(const std::vector<uint8_t> &buf) {
                 ZoneScoped;
                 robot_pose pose {};
@@ -173,6 +184,55 @@ namespace fanuc_ethernet {
                 }
                 pose.roll = result.value();
                 offset += sizeof(pose.roll);
+
+                auto byte_result = parse_byte_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.turn1 = byte_result.value();
+                offset += sizeof(pose.turn1);
+
+                byte_result = parse_byte_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.turn2 = byte_result.value();
+                offset += sizeof(pose.turn2);
+
+                byte_result = parse_byte_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.turn3 = byte_result.value();
+                offset += sizeof(pose.turn3);
+
+                byte_result = parse_byte_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.bitflip = byte_result.value();
+                offset += sizeof(pose.bitflip);
+
+                result = parse_float_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.E0 = result.value();
+                offset += sizeof(pose.E0);
+
+                result = parse_float_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.E1 = result.value();
+                offset += sizeof(pose.E1);
+
+                result = parse_float_from_buffer(buf, offset);
+                if(!result.has_value()) {
+                    return std::unexpected{result.error()}; 
+                }
+                pose.E2 = result.value();
+                offset += sizeof(pose.E2);
 
                 return pose;
             }
