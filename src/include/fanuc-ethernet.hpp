@@ -309,7 +309,27 @@ namespace fanuc_ethernet {
                 }
             }
 
-            // TODO: enable_robot, disable_robot, is_enabled, is_moving?, set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
+            std::expected<void, std::string> enable_robot() {
+                return write_R_register(1, 1);
+            }
+
+            std::expected<void, std::string> disable_robot() {
+                return write_R_register(1, 0);
+            }
+
+            // See register-definition.txt
+            // Ideally we would add another register that allows to check if the robot is moving, so that these concerns are separated.
+            // Currently, the same register is used for both enabled and moving, which is suboptimal.
+            // To fix this, a second register (moving_register) would have to be set when the movement is finished and the main loop would have to use the enable_register.
+            std::expected<bool, std::string> is_enabled() {
+                auto res = read_R_register(1);
+                if(res.has_value()) {
+                    return res.value() == 1;
+                }
+                else return std::unexpected {res.error()};
+            }
+
+            // TODO: set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
             // set_velocity_limit, move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };
 }
