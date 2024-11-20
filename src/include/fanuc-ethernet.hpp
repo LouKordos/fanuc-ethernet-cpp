@@ -41,6 +41,12 @@ namespace fanuc_ethernet {
             std::shared_ptr<SessionInfo> session_info;
             uint timeout_milliseconds;
             bool connected {false};
+            bool fine_high_speed_skip_enabled {false};
+            const uint ENABLE_REGISTER = 1; // Enable Register, 1 means robot moves, 0 means robot does not move, and interrupts using high speed skip
+            const uint HIGH_SPEED_SKIP_FLAG_REGISTER = 21; // Switch case register to determine mode, 0 is FINE + High speed Skip, 1 is CNT100 + "normal skip"
+            const uint SPEED_LIMIT_REGISTER = 5; // Speed register, used in move commands to control the speed
+            const uint POSE_SETPOINT_POSITION_REGISTER = 1; // Position setpoint used by TP program
+            const uint SKIP_POSE_POSITION_REGISTER = 4; // Set by high speed skip to position when it skips
         public:
             FANUCRobot(const std::string &ip, uint timeout_milliseconds = 30) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
                 
@@ -310,11 +316,11 @@ namespace fanuc_ethernet {
             }
 
             std::expected<void, std::string> enable_robot() {
-                return write_R_register(1, 1);
+                return write_R_register(ENABLE_REGISTER, 1);
             }
 
             std::expected<void, std::string> disable_robot() {
-                return write_R_register(1, 0);
+                return write_R_register(ENABLE_REGISTER, 0);
             }
 
             // See register-definition.txt
@@ -322,7 +328,7 @@ namespace fanuc_ethernet {
             // Currently, the same register is used for both enabled and moving, which is suboptimal.
             // To fix this, a second register (moving_register) would have to be set when the movement is finished and the main loop would have to use the enable_register.
             std::expected<bool, std::string> is_enabled() {
-                auto res = read_R_register(1);
+                auto res = read_R_register(ENABLE_REGISTER);
                 if(res.has_value()) {
                     return res.value() == 1;
                 }

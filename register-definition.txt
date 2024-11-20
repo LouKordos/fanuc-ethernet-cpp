@@ -1,5 +1,0 @@
-R[1] = Enable Register, 1 means robot moves, 0 means robot does not move, and interrupts using high speed skip
-R[21] = Switch case register to determine mode, 0 is FINE High speed Skip, 1 is CNT100 normal skip, (THIS MIGHT NOT BE CORRECT, STILL NEEDS TO BE IMPLEMENTED)
-R[5] = Speed register, used in move commands to control the speed
-PR[1] = Position setpoint used by TP program
-PR[4] = Set by high speed skip to position when it skips
