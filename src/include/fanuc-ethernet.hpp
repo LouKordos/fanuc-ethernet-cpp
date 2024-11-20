@@ -289,7 +289,7 @@ namespace fanuc_ethernet {
                 }
             }
 
-            std::expected<void, std::string> write_PR_register(const uint register_index, fanuc_ethernet::robot_pose desired_pose) {
+            std::expected<void, std::string> write_PR_register(const uint register_index, const fanuc_ethernet::robot_pose &desired_pose) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
