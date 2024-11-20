@@ -410,7 +410,27 @@ namespace fanuc_ethernet {
                 }
             }
 
-            // TODO: move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
+            // THIS IS VERY DANGEROUS AS THE ROBOT WILL NOT STOP UNTIL THE SERVOS BREAK OR THE POSITION IS REACHED. NO FORCE LIMITS ARE CHECKED WHILE MOVING!!!
+            // IMPLEMENT YOUR OWN FORCE CHECKS ON A SEPARATE THREAD AND USE THE ASYNC VERSION OF THIS FUNCTION!!!
+            // THIS FUNCTION WILL RETURN IMMEDIATELY AND ONLY TELL THE ROBOT TO MOVE TO THE DESIRED POSE WITHOUT BLOCKING IF IT IS DONE!
+            // Also, you have to specify stop_current_movement = true so that it actually stops the robot, updates the setpoint, and moves to the desired position.
+            // Otherwise, the robot MIGHT move to the first (potentially outdated) setpoint and only after that start moving to the newly set one.
+            std::expected<void, std::string> move_to_pos_async(const fanuc_ethernet::robot_pose &desired_pose, bool stop_current_movement = false) {
+                ZoneScoped;
+                if(stop_current_movement) {
+                    std::cout << "Stop current movement specified, stopping before updating register...\n";
+                    auto res = this->disable_robot();
+                    if(!res.has_value()) {
+                        std::cout << "Disabling robot failed!\n";
+                        return std::unexpected{res.error()};
+                    }
+                }
+                if(const auto res = write_PR_register(POSE_SETPOINT_POSITION_REGISTER, desired_pose); res.has_value()) {
+                    std::cout << "PR write succeeded, enabling robot...\n";
+                    return this->enable_robot();
+                }
+                else return res;
+            }
     };
 }
 

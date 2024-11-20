@@ -164,4 +164,24 @@ int main() {
             }
         }
     }
+
+    for(int i = 0; i < 3; i++) {
+        auto res = robot.read_current_pose();
+        if(res.has_value()) {
+            auto current_pose = res.value();
+            current_pose.z -= 30;
+            std::println("Current pose: X={0}, Y={1}, Z={2}\tMoving async to X={3},Y={4}, Z={5}", res.value().x, res.value().y, res.value().z, current_pose.x, current_pose.y, current_pose.z);
+            
+            auto movement_res = robot.move_to_pos_async(current_pose);
+            if(movement_res.has_value()) {
+                auto after_pose = robot.read_current_pose().value();
+                std::println("Movement INIT succeeded, waiting for 5sec until next desired pose is set. Current_pose: X={0}, Y={1}, Z={2}", after_pose.x, after_pose.y, after_pose.z);
+                usleep(5000000);
+            }
+            else {
+                std::println("Error while moving async to position, exiting: {0}", movement_res.error());
+                return 1;
+            }
+        }
+    }
 }
