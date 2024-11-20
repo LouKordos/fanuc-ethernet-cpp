@@ -46,19 +46,24 @@ namespace fanuc_ethernet {
                 
             }
 
-            bool initialize_connection() {
+            std::expected<void, std::string> initialize_connection() {
                 ZoneScoped;
-                // Open EIP session with the adapter, 0xAF12 is default CIP/EIP port
-                session_info = std::make_shared<SessionInfo>(ip, 0xAF12);
-                message_router = std::make_shared<MessageRouter>();
-                connected = true;
-                return true;
+                try {
+                    // Open EIP session with the adapter, 0xAF12 is default CIP/EIP port
+                    session_info = std::make_shared<SessionInfo>(ip, 0xAF12);
+                    message_router = std::make_shared<MessageRouter>();
+                    connected = true;
+                    return {};
+                }
+                catch(std::exception &e) {
+                    return std::unexpected{e.what()};
+                }
             }
 
-            bool write_R_register(uint register_index, int32_t value) {
+            std::expected<void, std::string> write_R_register(uint register_index, int32_t value) {
                 ZoneScoped;
                 if(!connected) {
-                    return false;
+                    return std::unexpected{"Not connected yet."};
                 }
                 try {
                     const CipUsint service_id = 0x10;
@@ -69,15 +74,13 @@ namespace fanuc_ethernet {
                     auto response = message_router->sendRequest(session_info, service_id, epath, data.data());
 
                     if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
-                        return true;
+                        return {};
                     }
                     else {
-                        std::cout << "Error: " << response.getGeneralStatusCode() << std::endl;
-                        return false;
+                        return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
-                    std::cout << "Exception:" << e.what() << std::endl;
-                    return false;
+                    return std::unexpected{e.what()};
                 }
             }
 
@@ -99,11 +102,9 @@ namespace fanuc_ethernet {
                         return result;
                     }
                     else {
-                        std::cout << "Error: " << response.getGeneralStatusCode() << std::endl;
                         return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
-                    std::cout << "Exception:" << e.what() << std::endl;
                     return std::unexpected{e.what()};
                 }
             }
@@ -198,6 +199,9 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Exception:" + std::string{e.what()}};
                 }
             }
+
+            // TODO: enable_robot, disable_robot, is_enabled, is_moving?, write_position_register(register_index), set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
+            // set_velocity_limit, move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };
 }
 

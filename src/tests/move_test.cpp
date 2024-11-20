@@ -4,9 +4,10 @@
 int main() {
     fanuc_ethernet::FANUCRobot robot{"10.36.12.3"};
     std::println("Robot object initialized");
+    auto init_result = robot.initialize_connection();
 
-    if(!robot.initialize_connection()) {
-        std::println("Failed to connect to FANUC robot, exiting.");
+    if(!init_result.has_value()) {
+        std::println("Failed to connect to FANUC robot, exiting: {0}", init_result.error());
         return 1;
     }
 
@@ -16,7 +17,7 @@ int main() {
             std::println("Value: {0}", result.value());        
         }
         else {
-            std::println("No value returned for register, exiting.");
+            std::println("No value returned for register, exiting: {0}", result.error());
             return 1;
         }
     }
@@ -26,7 +27,7 @@ int main() {
         std::println("Position write succeeded.");
     }
     else {
-        std::println("Position write failed, exiting.");
+        std::println("Position write failed, exiting: {0}", success.error());
         return 1;
     }
 
