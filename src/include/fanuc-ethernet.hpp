@@ -381,6 +381,35 @@ namespace fanuc_ethernet {
                 return write_R_register(VELOCITY_LIMIT_REGISTER, vel_limit);
             }
 
+            // THIS IS VERY DANGEROUS AS THE ROBOT WILL NOT STOP UNTIL THE SERVOS BREAK, AS NO FORCE LIMITS ARE CHECKED WHILE MOVING!!!
+            // IMPLEMENT YOUR OWN FORCE CHECKS ON A SEPARATE THREAD AND USE THE ASYNC VERSION OF THIS FUNCTION!!!
+            std::expected<void, std::string> move_to_pos_sync(const fanuc_ethernet::robot_pose &desired_pose) {
+                ZoneScoped;
+                if(const auto res = write_PR_register(POSE_SETPOINT_POSITION_REGISTER, desired_pose); res.has_value()) {
+                    std::cout << "PR write succeeded, enabling robot...\n";
+                    this->enable_robot();
+                }
+                else return res;
+
+                // usleep(1000);
+
+                // Spin until movement is finished
+                while(true) {
+                    ZoneScoped;
+                    const auto res = this->is_enabled();
+                    if(res.has_value()) {
+                        if(!res.value()) {
+                            std::cout << "Movement finished, returning.\n";
+                            return {};
+                        }
+                        std::cout << "Waiting for movement to finish...\n";
+                    }
+                    else {
+                        return std::unexpected{res.error()};
+                    }
+                }
+            }
+
             // TODO: move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };
 }
