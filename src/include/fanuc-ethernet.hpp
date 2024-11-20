@@ -126,12 +126,12 @@ namespace fanuc_ethernet {
 
             std::expected<robot_pose, std::string> parse_pose_buffer(const std::vector<uint8_t> &buf) {
                 ZoneScoped;
-                robot_pose pose;
+                robot_pose pose {};
 
                 pose.utool = buf[0] + buf[1] * 8;
                 pose.uframe = buf[2] + buf[3] * 8;
                 
-                int offset = 4;
+                int offset {4};
 
                 auto result = parse_float_from_buffer(buf, offset);
                 if(!result.has_value()) {
