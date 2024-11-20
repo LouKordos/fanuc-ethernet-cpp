@@ -283,7 +283,33 @@ namespace fanuc_ethernet {
                 }
             }
 
-            // TODO: enable_robot, disable_robot, is_enabled, is_moving?, write_position_register(register_index), set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
+            std::expected<void, std::string> write_PR_register(const uint register_index, fanuc_ethernet::robot_pose desired_pose) {
+                ZoneScoped;
+                if(!connected) {
+                    return std::unexpected{"Not connected yet."};
+                }
+                try {
+                    const CipUsint service_id = 0x10;
+                    const EPath epath(0x7B, 0x01, register_index);
+                    Buffer data;
+                    // Apparently UFRAME and UTOOL have to always be 0.
+                    data << desired_pose.utool << desired_pose.uframe << desired_pose.x << desired_pose.y << desired_pose.z << desired_pose.yaw << desired_pose.pitch << desired_pose.roll
+                        << desired_pose.turn1 << desired_pose.turn2 << desired_pose.turn3 << desired_pose.bitflip << desired_pose.E0 << desired_pose.E1 << desired_pose.E2;
+
+                    auto response = message_router->sendRequest(session_info, service_id, epath, data.data());
+
+                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
+                        return {};
+                    }
+                    else {
+                        return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                    }
+                } catch (std::exception &e) {
+                    return std::unexpected{e.what()};
+                }
+            }
+
+            // TODO: enable_robot, disable_robot, is_enabled, is_moving?, set_mode_cnt_normal_skip, set_mode_fine_high_speed_skip, 
             // set_velocity_limit, move_to_pos_sync(x,y,z,yaw,pitch,roll), move_to_pos_async(x,y,z,yaw,pitch,roll)
     };
 }
