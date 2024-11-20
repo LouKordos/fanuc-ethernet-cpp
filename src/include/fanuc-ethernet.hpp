@@ -61,7 +61,7 @@ namespace fanuc_ethernet {
                 }
             }
 
-            std::expected<void, std::string> write_R_register(uint register_index, int32_t value) {
+            std::expected<void, std::string> write_R_register(const uint register_index, const int32_t value) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -85,7 +85,7 @@ namespace fanuc_ethernet {
                 }
             }
 
-            std::expected<int, std::string> read_R_register(uint register_index) {
+            std::expected<int, std::string> read_R_register(const uint register_index) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -110,7 +110,7 @@ namespace fanuc_ethernet {
                 }
             }
 
-            std::expected<float, std::string> parse_float_from_buffer(const std::vector<uint8_t> &buf, int offset) {
+            std::expected<float, std::string> parse_float_from_buffer(const std::vector<uint8_t> &buf, const int offset) {
                 ZoneScoped;
                 if(buf.size() < offset + sizeof(float)) {
                     return std::unexpected{"Buffer too small to parse float"};
