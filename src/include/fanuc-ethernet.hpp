@@ -320,10 +320,12 @@ namespace fanuc_ethernet {
             }
 
             std::expected<void, std::string> enable_robot() {
+                ZoneScoped;
                 return write_R_register(ENABLE_REGISTER, 1);
             }
 
             std::expected<void, std::string> disable_robot() {
+                ZoneScoped;
                 return write_R_register(ENABLE_REGISTER, 0);
             }
 
@@ -332,6 +334,7 @@ namespace fanuc_ethernet {
             // Currently, the same register is used for both enabled and moving, which is suboptimal.
             // To fix this, a second register (moving_register) would have to be set when the movement is finished and the main loop would have to use the enable_register.
             std::expected<bool, std::string> is_enabled() {
+                ZoneScoped;
                 auto res = read_R_register(ENABLE_REGISTER);
                 if(res.has_value()) {
                     return res.value() == 1;
@@ -343,6 +346,7 @@ namespace fanuc_ethernet {
             // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
             // However, the TP program needs to be adjusted accordingly in that case, of course.
             std::expected<void, std::string> set_mode_fine_high_speed_skip() {
+                ZoneScoped;
                 auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 0);
                 if(res.has_value()) {
                     fine_high_speed_skip_enabled = true;
@@ -357,6 +361,7 @@ namespace fanuc_ethernet {
             // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
             // However, the TP program needs to be adjusted accordingly in that case, of course.
             std::expected<void, std::string> set_mode_cnt_normal_skip() {
+                ZoneScoped;
                 auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 1);
                 if(res.has_value()) {
                     fine_high_speed_skip_enabled = false;
@@ -372,6 +377,7 @@ namespace fanuc_ethernet {
             }
 
             std::expected<void, std::string> set_velocity_limit(const uint vel_limit) {
+                ZoneScoped;
                 return write_R_register(VELOCITY_LIMIT_REGISTER, vel_limit);
             }
 
