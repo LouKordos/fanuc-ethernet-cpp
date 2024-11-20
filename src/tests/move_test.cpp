@@ -32,7 +32,7 @@ int main() {
     }
 
     for(int i = 0; i < 1000; i++) {
-        std::expected<fanuc_ethernet::robot_pose, std::string> result = robot.read_current_position();
+        std::expected<fanuc_ethernet::robot_pose, std::string> result = robot.read_current_pose();
         if(result.has_value()) {
             fanuc_ethernet::robot_pose pose = result.value();
             std::println("Robot current pose read succeeded: UTOOL={0}, UFRAME={1}, X={2}, Y={3}, Z={4}, Yaw={5}, Pitch={6}, Roll={7}, turn1={8}, turn2={9}, turn3={10}, bitflip={11}, E0={12}, E1={13}, E2={14}", pose.utool, pose.uframe, pose.x, pose.y, pose.z, pose.yaw, pose.pitch, pose.roll, pose.turn1, pose.turn2, pose.turn3, pose.bitflip, pose.E0, pose.E1, pose.E2);

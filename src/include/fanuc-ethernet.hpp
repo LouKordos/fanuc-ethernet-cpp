@@ -243,7 +243,7 @@ namespace fanuc_ethernet {
                 return pose;
             }
 
-            std::expected<robot_pose, std::string> read_current_position() {
+            std::expected<robot_pose, std::string> read_current_pose() {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
