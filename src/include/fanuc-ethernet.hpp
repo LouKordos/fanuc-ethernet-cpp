@@ -68,6 +68,7 @@ namespace fanuc_ethernet {
                 }
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> write_R_register(const uint register_index, const int32_t value) {
                 ZoneScoped;
                 if(!connected) {
@@ -92,6 +93,7 @@ namespace fanuc_ethernet {
                 }
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<int, std::string> read_R_register(const uint register_index) {
                 ZoneScoped;
                 if(!connected) {
@@ -245,6 +247,7 @@ namespace fanuc_ethernet {
                 return pose;
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<robot_pose, std::string> read_current_pose() {
                 ZoneScoped;
                 if(!connected) {
@@ -268,6 +271,7 @@ namespace fanuc_ethernet {
                 }
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<robot_pose, std::string> read_PR_register(const uint register_index) {
                 ZoneScoped;
                 if(!connected) {
@@ -291,6 +295,7 @@ namespace fanuc_ethernet {
                 }
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> write_PR_register(const uint register_index, const fanuc_ethernet::robot_pose &desired_pose) {
                 ZoneScoped;
                 if(!connected) {
@@ -319,11 +324,13 @@ namespace fanuc_ethernet {
                 }
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> enable_robot() {
                 ZoneScoped;
                 return write_R_register(ENABLE_REGISTER, 1);
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> disable_robot() {
                 ZoneScoped;
                 return write_R_register(ENABLE_REGISTER, 0);
@@ -333,6 +340,7 @@ namespace fanuc_ethernet {
             // Ideally we would add another register that allows to check if the robot is moving, so that these concerns are separated.
             // Currently, the same register is used for both enabled and moving, which is suboptimal.
             // To fix this, a second register (moving_register) would have to be set when the movement is finished and the main loop would have to use the enable_register.
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<bool, std::string> is_enabled() {
                 ZoneScoped;
                 auto res = read_R_register(ENABLE_REGISTER);
@@ -345,6 +353,7 @@ namespace fanuc_ethernet {
             // Sets movement mode to FINE and enables high speed skip. This should be used for final adjustments as it's limited to 100mm/s.
             // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
             // However, the TP program needs to be adjusted accordingly in that case, of course.
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> set_mode_fine_high_speed_skip() {
                 ZoneScoped;
                 auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 0);
@@ -360,6 +369,7 @@ namespace fanuc_ethernet {
             // Sets movement mode to CNT and switches to "normal speed" skip.
             // If controlling FINE/CNT and high speed skip separately is desired, the register could be used to store values other than 0 and 1.
             // However, the TP program needs to be adjusted accordingly in that case, of course.
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> set_mode_cnt_normal_skip() {
                 ZoneScoped;
                 auto res = write_R_register(HIGH_SPEED_SKIP_FLAG_REGISTER, 1);
@@ -376,6 +386,7 @@ namespace fanuc_ethernet {
                 return fine_high_speed_skip_enabled;
             }
 
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> set_velocity_limit(const uint vel_limit) {
                 ZoneScoped;
                 return write_R_register(VELOCITY_LIMIT_REGISTER, vel_limit);
@@ -383,6 +394,7 @@ namespace fanuc_ethernet {
 
             // THIS IS VERY DANGEROUS AS THE ROBOT WILL NOT STOP UNTIL THE SERVOS BREAK, AS NO FORCE LIMITS ARE CHECKED WHILE MOVING!!!
             // IMPLEMENT YOUR OWN FORCE CHECKS ON A SEPARATE THREAD AND USE THE ASYNC VERSION OF THIS FUNCTION!!!
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> move_to_pos_sync(const fanuc_ethernet::robot_pose &desired_pose) {
                 ZoneScoped;
                 if(const auto res = write_PR_register(POSE_SETPOINT_POSITION_REGISTER, desired_pose); res.has_value()) {
@@ -415,6 +427,7 @@ namespace fanuc_ethernet {
             // THIS FUNCTION WILL RETURN IMMEDIATELY AND ONLY TELL THE ROBOT TO MOVE TO THE DESIRED POSE WITHOUT BLOCKING IF IT IS DONE!
             // Also, you have to specify stop_current_movement = true so that it actually stops the robot, updates the setpoint, and moves to the desired position.
             // Otherwise, the robot MIGHT move to the first (potentially outdated) setpoint and only after that start moving to the newly set one.
+            // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
             std::expected<void, std::string> move_to_pos_async(const fanuc_ethernet::robot_pose &desired_pose, bool stop_current_movement = false) {
                 ZoneScoped;
                 if(stop_current_movement) {
