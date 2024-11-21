@@ -50,7 +50,7 @@ namespace fanuc_ethernet {
             const uint POSE_SETPOINT_POSITION_REGISTER = 1; // Position setpoint used by TP program
             const uint SKIP_POSE_POSITION_REGISTER = 4; // Set by high speed skip to position when it skips
         public:
-            FANUCRobot(const std::string &ip, uint timeout_milliseconds = 30) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
+            FANUCRobot(const std::string &ip, uint timeout_milliseconds = 50) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
                 
             }
 
