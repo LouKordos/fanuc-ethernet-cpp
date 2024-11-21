@@ -11,11 +11,6 @@
 
 #include <tracy/Tracy.hpp>
 
-using eipScanner::SessionInfo;
-using eipScanner::MessageRouter;
-using namespace eipScanner::cip;
-using namespace eipScanner::utils;
-
 namespace fanuc_ethernet {
     struct robot_pose {
         short utool;
@@ -39,8 +34,8 @@ namespace fanuc_ethernet {
     class FANUCRobot {
         private:
             std::string ip;
-            std::shared_ptr<MessageRouter> message_router;
-            std::shared_ptr<SessionInfo> session_info;
+            std::shared_ptr<eipScanner::MessageRouter> message_router;
+            std::shared_ptr<eipScanner::SessionInfo> session_info;
             uint16_t timeout_milliseconds;
             bool connected {false};
             bool fine_high_speed_skip_enabled {false};
@@ -58,8 +53,8 @@ namespace fanuc_ethernet {
                 ZoneScoped;
                 try {
                     // Open EIP session with the adapter, 0xAF12 is default CIP/EIP port
-                    session_info = std::make_shared<SessionInfo>(ip, 0xAF12, std::chrono::milliseconds(timeout_milliseconds));
-                    message_router = std::make_shared<MessageRouter>();
+                    session_info = std::make_shared<eipScanner::SessionInfo>(ip, 0xAF12, std::chrono::milliseconds(timeout_milliseconds));
+                    message_router = std::make_shared<eipScanner::MessageRouter>();
                     connected = true;
                     return {};
                 }
@@ -75,14 +70,14 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Not connected yet."};
                 }
                 try {
-                    const CipUsint service_id = 0x10;
-                    const EPath epath(0x6B, 0x1, register_index);
-                    Buffer data;
+                    const eipScanner::cip::CipUsint service_id = 0x10;
+                    const eipScanner::cip::EPath epath(0x6B, 0x1, register_index);
+                    eipScanner::utils::Buffer data;
                     data << value;
 
                     auto response = message_router->sendRequest(session_info, service_id, epath, data.data());
 
-                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
+                    if (response.getGeneralStatusCode() == eipScanner::cip::GeneralStatusCodes::SUCCESS) {
                         return {};
                     }
                     else {
@@ -100,14 +95,14 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Not connected yet."};
                 }
                 try {
-                    const CipUsint service_id = 0xe;
-                    const EPath epath(0x6B, 0x1, register_index);
+                    const eipScanner::cip::CipUsint service_id = 0xe;
+                    const eipScanner::cip::EPath epath(0x6B, 0x1, register_index);
 
                     auto response = message_router->sendRequest(session_info, service_id, epath);
 
-                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
-                        Buffer buffer(response.getData());
-                        CipInt result;
+                    if (response.getGeneralStatusCode() == eipScanner::cip::GeneralStatusCodes::SUCCESS) {
+                        eipScanner::utils::Buffer buffer(response.getData());
+                        eipScanner::cip::CipInt result;
                         buffer >> result;
                         return result;
                     }
@@ -254,13 +249,13 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Not connected yet."};
                 }
                 try {
-                    const CipUsint service_id = ServiceCodes::GET_ATTRIBUTE_SINGLE;
-                    const EPath epath(0x7D, 0x01, 0x01);
+                    const eipScanner::cip::CipUsint service_id = eipScanner::cip::ServiceCodes::GET_ATTRIBUTE_SINGLE;
+                    const eipScanner::cip::EPath epath(0x7D, 0x01, 0x01);
 
                     auto response = message_router->sendRequest(session_info, service_id, epath);
 
-                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
-                        Buffer buffer(response.getData());
+                    if (response.getGeneralStatusCode() == eipScanner::cip::GeneralStatusCodes::SUCCESS) {
+                        eipScanner::utils::Buffer buffer(response.getData());
                         return parse_pose_buffer(buffer.data());
                     }
                     else {
@@ -278,13 +273,13 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Not connected yet."};
                 }
                 try {
-                    const CipUsint service_id = ServiceCodes::GET_ATTRIBUTE_SINGLE;
-                    const EPath epath(0x7B, 0x01, register_index);
+                    const eipScanner::cip::CipUsint service_id = eipScanner::cip::ServiceCodes::GET_ATTRIBUTE_SINGLE;
+                    const eipScanner::cip::EPath epath(0x7B, 0x01, register_index);
 
                     auto response = message_router->sendRequest(session_info, service_id, epath);
 
-                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
-                        Buffer buffer(response.getData());
+                    if (response.getGeneralStatusCode() == eipScanner::cip::GeneralStatusCodes::SUCCESS) {
+                        eipScanner::utils::Buffer buffer(response.getData());
                         return parse_pose_buffer(buffer.data());
                     }
                     else {
@@ -302,9 +297,9 @@ namespace fanuc_ethernet {
                     return std::unexpected{"Not connected yet."};
                 }
                 try {
-                    const CipUsint service_id = 0x10;
-                    const EPath epath(0x7B, 0x01, register_index);
-                    Buffer data;
+                    const eipScanner::cip::CipUsint service_id = 0x10;
+                    const eipScanner::cip::EPath epath(0x7B, 0x01, register_index);
+                    eipScanner::utils::Buffer data;
                     // Apparently UFRAME and UTOOL have to always be 0.
                     data << (short)0 << (short)0 << desired_pose.x << desired_pose.y << desired_pose.z << desired_pose.yaw << desired_pose.pitch << desired_pose.roll
                         << desired_pose.turn1 << desired_pose.turn2 << desired_pose.turn3 << desired_pose.bitflip << desired_pose.E0 << desired_pose.E1 << desired_pose.E2;
@@ -313,7 +308,7 @@ namespace fanuc_ethernet {
 
                     auto response = message_router->sendRequest(session_info, service_id, epath, data.data());
 
-                    if (response.getGeneralStatusCode() == GeneralStatusCodes::SUCCESS) {
+                    if (response.getGeneralStatusCode() == eipScanner::cip::GeneralStatusCodes::SUCCESS) {
                         return {};
                     }
                     else {
