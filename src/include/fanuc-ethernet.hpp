@@ -41,16 +41,16 @@ namespace fanuc_ethernet {
             std::string ip;
             std::shared_ptr<MessageRouter> message_router;
             std::shared_ptr<SessionInfo> session_info;
-            uint timeout_milliseconds;
+            uint16_t timeout_milliseconds;
             bool connected {false};
             bool fine_high_speed_skip_enabled {false};
-            const uint ENABLE_REGISTER = 1; // Enable Register, 1 means robot moves, 0 means robot does not move, and interrupts using high speed skip
-            const uint HIGH_SPEED_SKIP_FLAG_REGISTER = 21; // Switch case register to determine mode, 0 is FINE + High speed Skip, 1 is CNT100 + "normal skip"
-            const uint VELOCITY_LIMIT_REGISTER = 5; // Velocity register, used in move commands to control the velocity
-            const uint POSE_SETPOINT_POSITION_REGISTER = 1; // Position setpoint used by TP program
-            const uint SKIP_POSE_POSITION_REGISTER = 4; // Set by high speed skip to position when it skips
+            const uint8_t ENABLE_REGISTER = 1; // Enable Register, 1 means robot moves, 0 means robot does not move, and interrupts using high speed skip
+            const uint8_t HIGH_SPEED_SKIP_FLAG_REGISTER = 21; // Switch case register to determine mode, 0 is FINE + High speed Skip, 1 is CNT100 + "normal skip"
+            const uint8_t VELOCITY_LIMIT_REGISTER = 5; // Velocity register, used in move commands to control the velocity
+            const uint8_t POSE_SETPOINT_POSITION_REGISTER = 1; // Position setpoint used by TP program
+            const uint8_t SKIP_POSE_POSITION_REGISTER = 4; // Set by high speed skip to position when it skips
         public:
-            FANUCRobot(const std::string &ip, uint timeout_milliseconds = 50) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
+            FANUCRobot(const std::string &ip, uint16_t timeout_milliseconds = 50) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
                 
             }
 
@@ -69,7 +69,7 @@ namespace fanuc_ethernet {
             }
 
             // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
-            std::expected<void, std::string> write_R_register(const uint register_index, const int32_t value) {
+            std::expected<void, std::string> write_R_register(const uint8_t register_index, const int32_t value) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -86,7 +86,7 @@ namespace fanuc_ethernet {
                         return {};
                     }
                     else {
-                        return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                        return std::unexpected{std::to_string(static_cast<int16_t>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
                     return std::unexpected{e.what()};
@@ -94,7 +94,7 @@ namespace fanuc_ethernet {
             }
 
             // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
-            std::expected<int, std::string> read_R_register(const uint register_index) {
+            std::expected<int16_t, std::string> read_R_register(const uint8_t register_index) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -112,14 +112,14 @@ namespace fanuc_ethernet {
                         return result;
                     }
                     else {
-                        return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                        return std::unexpected{std::to_string(static_cast<int16_t>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
                     return std::unexpected{e.what()};
                 }
             }
 
-            std::expected<float, std::string> parse_float_from_buffer(const std::vector<uint8_t> &buf, const int offset) {
+            std::expected<float, std::string> parse_float_from_buffer(const std::vector<uint8_t> &buf, const int16_t offset) {
                 ZoneScoped;
                 if(buf.size() < offset + sizeof(float)) {
                     return std::unexpected{"Buffer too small to parse float"};
@@ -133,7 +133,7 @@ namespace fanuc_ethernet {
                 // return *reinterpret_cast<const float*>(&buf[offset]);
             }
 
-            std::expected<uint8_t, std::string> parse_byte_from_buffer(const std::vector<uint8_t> &buf, const int offset) {
+            std::expected<uint8_t, std::string> parse_byte_from_buffer(const std::vector<uint8_t> &buf, const int16_t offset) {
                 ZoneScoped;
                 if(buf.size() < offset + sizeof(uint8_t)) {
                     return std::unexpected{"Buffer too small to parse byte"};
@@ -151,7 +151,7 @@ namespace fanuc_ethernet {
                 pose.utool = buf[0] + buf[1] * 8;
                 pose.uframe = buf[2] + buf[3] * 8;
                 
-                int offset {4};
+                int16_t offset {4};
 
                 auto result = parse_float_from_buffer(buf, offset);
                 if(!result.has_value()) {
@@ -264,7 +264,7 @@ namespace fanuc_ethernet {
                         return parse_pose_buffer(buffer.data());
                     }
                     else {
-                        return std::unexpected{"Error: " + std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                        return std::unexpected{"Error: " + std::to_string(static_cast<int16_t>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
                     return std::unexpected{"Exception:" + std::string{e.what()}};
@@ -272,7 +272,7 @@ namespace fanuc_ethernet {
             }
 
             // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
-            std::expected<robot_pose, std::string> read_PR_register(const uint register_index) {
+            std::expected<robot_pose, std::string> read_PR_register(const uint8_t register_index) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -288,7 +288,7 @@ namespace fanuc_ethernet {
                         return parse_pose_buffer(buffer.data());
                     }
                     else {
-                        return std::unexpected{"Error: " + std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                        return std::unexpected{"Error: " + std::to_string(static_cast<int16_t>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
                     return std::unexpected{"Exception:" + std::string{e.what()}};
@@ -296,7 +296,7 @@ namespace fanuc_ethernet {
             }
 
             // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
-            std::expected<void, std::string> write_PR_register(const uint register_index, const fanuc_ethernet::robot_pose &desired_pose) {
+            std::expected<void, std::string> write_PR_register(const uint8_t register_index, const fanuc_ethernet::robot_pose &desired_pose) {
                 ZoneScoped;
                 if(!connected) {
                     return std::unexpected{"Not connected yet."};
@@ -317,7 +317,7 @@ namespace fanuc_ethernet {
                         return {};
                     }
                     else {
-                        return std::unexpected{std::to_string(static_cast<int>(response.getGeneralStatusCode()))};
+                        return std::unexpected{std::to_string(static_cast<int16_t>(response.getGeneralStatusCode()))};
                     }
                 } catch (std::exception &e) {
                     return std::unexpected{e.what()};
@@ -387,7 +387,7 @@ namespace fanuc_ethernet {
             }
 
             // Resource temporarily unavailable error might mean that timeout was exceeded. You can specify this timeout in the FANUCRobot constructor.
-            std::expected<void, std::string> set_velocity_limit(const uint vel_limit) {
+            std::expected<void, std::string> set_velocity_limit(const uint32_t vel_limit) {
                 ZoneScoped;
                 return write_R_register(VELOCITY_LIMIT_REGISTER, vel_limit);
             }
