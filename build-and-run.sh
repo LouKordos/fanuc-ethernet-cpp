@@ -34,5 +34,9 @@ else
     cd /app/src
     cmake -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -S . -B /app/src/build
     cmake --build /app/src/build -j $(nproc) -v
-    /app/src/build/tests/move_test
+    if [[ "${BUILD_TYPE}" = "Debug" ]]; then
+        gdb /app/src/build/tests/move_test
+    else
+        /app/src/build/tests/move_test
+    fi
 fi
