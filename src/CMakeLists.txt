@@ -19,6 +19,16 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 include(FetchContent)
+
+set(EIPSCANNER_BUILD_SHARED ON CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  eip_scanner
+  GIT_REPOSITORY https://github.com/nimbuscontrols/EIPScanner.git
+  GIT_TAG d20ef61
+  GIT_SHALLOW TRUE
+  GIT_PROGRESS TRUE
+)
+
 FetchContent_Declare (
   tracy
   GIT_REPOSITORY https://github.com/wolfpld/tracy.git
@@ -26,11 +36,22 @@ FetchContent_Declare (
   GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
 )
+
 FetchContent_MakeAvailable(tracy)
+
+FetchContent_MakeAvailable(eip_scanner)
+# Manually set the include directories for EIPScanner
+target_include_directories(EIPScanner PUBLIC ${eip_scanner_SOURCE_DIR}/src)
+get_target_property(EIPSCANNER_INCLUDE_DIRS EIPScanner INTERFACE_INCLUDE_DIRECTORIES) 
+message(STATUS "EIPScanner include directories: ${EIPSCANNER_INCLUDE_DIRS}")
+
+
 option(TRACY_ENABLE "" ON)
 
 add_library(fanuc_ethernet INTERFACE)
-target_link_libraries(fanuc_ethernet INTERFACE TracyClient)
+target_include_directories(fanuc_ethernet INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+target_link_libraries(fanuc_ethernet INTERFACE TracyClient EIPScanner)
+
 
 # Link Time Optimization
 include(CheckIPOSupported)

@@ -1,9 +1,9 @@
 #ifndef FANUC_ETHERNET_CPP
 #define FANUC_ETHERNET_CPP
 
-#include <EIPScanner/MessageRouter.h>
-#include <EIPScanner/utils/Logger.h>
-#include <EIPScanner/utils/Buffer.h>
+#include <MessageRouter.h>
+#include <utils/Logger.h>
+#include <utils/Buffer.h>
 #include <iostream>
 #include <expected>
 #include <string>

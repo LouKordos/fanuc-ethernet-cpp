@@ -19,12 +19,12 @@ ENV CC=gcc-14
 ENV CXX=g++-14
 ENV DOCKER_FLAG_FOR_RUN_SCRIPT=1
 
-RUN git clone https://github.com/nimbuscontrols/EIPScanner.git /tmp/EIPScanner
-RUN cd /tmp/EIPScanner && git reset --hard d20ef61
-RUN mkdir build
-WORKDIR /tmp/EIPScanner/build
-RUN cmake ..
-RUN cmake --build . --target install --parallel
+# RUN git clone https://github.com/nimbuscontrols/EIPScanner.git /tmp/EIPScanner
+# RUN cd /tmp/EIPScanner && git reset --hard d20ef61
+# RUN mkdir build
+# WORKDIR /tmp/EIPScanner/build
+# RUN cmake ..
+# RUN cmake --build . --target install --parallel
 
 # NEEDS TO RUN AFTER INSTALLING ALL DEPENDENCIES
 RUN ldconfig
