@@ -65,6 +65,7 @@
         "condition_variable": "cpp",
         "mutex": "cpp",
         "shared_mutex": "cpp",
-        "print": "cpp"
+        "print": "cpp",
+        "list": "cpp"
     }
 }
