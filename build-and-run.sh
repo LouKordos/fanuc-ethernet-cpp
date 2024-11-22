@@ -31,9 +31,9 @@ if [[ -z "${DOCKER_FLAG_FOR_RUN_SCRIPT}" ]]; then
     docker exec -it fanuc-ethernet-cpp-fanuc-ethernet-cpp-1 /bin/bash
 else
     echo "Docker detected."
-    cd /app/src
-    cmake -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -S . -B /app/src/build
-    cmake --build /app/src/build -j $(nproc) -v
+    cd /app/
+    cmake -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -S . -B /app/build
+    cmake --build /app/build -j $(nproc) -v
     if [[ "${BUILD_TYPE}" = "Debug" ]]; then
         gdb /app/src/build/tests/move_test
     else
