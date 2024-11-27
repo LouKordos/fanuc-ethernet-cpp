@@ -22,15 +22,13 @@ FetchContent_Declare(
   eip_scanner
   GIT_REPOSITORY https://github.com/nimbuscontrols/EIPScanner.git
   GIT_TAG d20ef613e321da71a8297a813be2c330627e9b34
-  GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
 )
 
 FetchContent_Declare (
   tracy
   GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-  GIT_TAG master
-  GIT_SHALLOW TRUE
+  GIT_TAG 759b4c3bfe207ab382c01080f0417aca5af4411a
   GIT_PROGRESS TRUE
 )
 
