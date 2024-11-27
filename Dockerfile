@@ -29,8 +29,8 @@ ENV DOCKER_FLAG_FOR_RUN_SCRIPT=1
 # NEEDS TO RUN AFTER INSTALLING ALL DEPENDENCIES
 RUN ldconfig
 
-WORKDIR /app/src
 COPY ./ /app/
+WORKDIR /app
 
 RUN cmake -DCMAKE_BUILD_TYPE=Release -S . -B ./build
 RUN cmake --build ./build -j $(nproc) -v

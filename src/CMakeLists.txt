@@ -21,7 +21,7 @@ set(EIPSCANNER_BUILD_SHARED ON CACHE BOOL "" FORCE)
 FetchContent_Declare(
   eip_scanner
   GIT_REPOSITORY https://github.com/nimbuscontrols/EIPScanner.git
-  GIT_TAG d20ef61
+  GIT_TAG d20ef613e321da71a8297a813be2c330627e9b34
   GIT_SHALLOW TRUE
   GIT_PROGRESS TRUE
 )
