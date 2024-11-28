@@ -63,8 +63,8 @@ namespace fanuc_ethernet {
             * @param ip The IP address of the robot controller.
             * @param timeout_milliseconds Communication timeout in milliseconds (default is 50 ms).
             */
-            FANUCRobot(const std::string &ip, uint16_t timeout_milliseconds = 50) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
-                
+            FANUCRobot(const std::string &ip, eipScanner::utils::LogLevel log_level, uint16_t timeout_milliseconds = 50) : ip(ip), timeout_milliseconds(timeout_milliseconds) {
+                eipScanner::utils::Logger::setLogLevel(log_level);
             }
 
             /**

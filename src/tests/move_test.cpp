@@ -2,7 +2,7 @@
 #include <print>
 
 int main() {
-    fanuc_ethernet::FANUCRobot robot{"10.36.12.3"};
+    fanuc_ethernet::FANUCRobot robot{"10.36.12.3", eipScanner::utils::LogLevel::WARNING};
     std::println("Robot object initialized");
     auto init_result = robot.initialize_connection();
 
